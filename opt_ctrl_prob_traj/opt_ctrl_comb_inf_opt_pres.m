@@ -1,0 +1,95 @@
+close all
+clear all
+
+%% Flat function landscpae
+close all;
+hold on;
+func = @(x)(-(exp(-x.^2)/2)/(sqrt(2*pi))+1);
+g_func = @(x)((2251799813685248*x*exp(-x.^2))/5644425081792261);
+h_func = @(x)((2251799813685248*exp(-x.^2))/5644425081792261 - ...
+              (4503599627370496*x.^2*exp(-x.^2))/5644425081792261);
+
+xs = -10:0.01:10;
+params.it_lim = 100; params.tol = 1e-12; params.init = .5; 
+params.g_func = g_func; params.h_func = h_func; params.alpha = .1;
+
+[mins, ~] = nwt_min(params);
+plot(xs, func(xs), 'r', 'LineWidth', 2);
+for i = 1:length(mins)
+    comet(mins(i), func(mins(i)));
+    drawnow;
+end
+
+
+%% Smooth function landscape
+close all;
+hold on;
+s_func   = @(x)(exp(-.1*x) + exp(.1*x));
+ds_func  = @(x)(exp(x/10)/10 - exp(-x/10)/10);
+dds_func = @(x)(exp(-x/10)/100 + exp(x/10)/100);
+
+xs = -10:0.01:10;
+
+params.it_lim = 100; params.tol = 1e-12; params.init = 7; 
+params.g_func = ds_func; params.h_func = dds_func; params.alpha = .15;
+
+[mins, ~] = nwt_min(params);
+plot(xs, s_func(xs), 'r', 'LineWidth', 2);
+for i = 1:length(mins)
+    comet(mins(i), s_func(mins(i)));
+    drawnow;
+end
+
+
+%% Minima function.
+close all;
+hold on;
+m_func    = @(x)(sin(10*pi.*x)./(2.*x)+(x-1).^4);
+d_m_func  = @(x)(4*(x - 1).^3 - sin(10*pi*x)./(2*x.^2) + (5*pi*cos(10*pi*x))./x);
+dd_m_func = @(x)(12*(x - 1).^2 + sin(10*pi*x)./x.^3 - (10*pi*cos(10*pi*x))./x.^2 - (50*pi^2*sin(10*pi*x))./x);
+xs = .5:0.01:2.5;
+plot(xs, m_func(xs), 'r', 'LineWidth', 2);
+
+params.it_lim = 100; params.tol = 1e-12; params.init = 2.4; 
+params.g_func = d_m_func; params.h_func = dd_m_func; params.alpha = .9;
+
+[mins, ~] = nwt_min(params);
+for i = 1:length(mins)
+    comet(mins(i), m_func(mins(i)));
+    drawnow;
+end
+
+
+%% Minima sampling
+close all
+clear all
+hold on
+
+m_func    = @(x)(sin(10*pi.*x)./(2.*x)+(x-1).^4);
+d_m_func  = @(x)(4*(x - 1).^3 - sin(10*pi*x)./(2*x.^2) + (5*pi*cos(10*pi*x))./x);
+dd_m_func = @(x)(12*(x - 1).^2 + sin(10*pi*x)./x.^3 - (10*pi*cos(10*pi*x))./x.^2 - (50*pi^2*sin(10*pi*x))./x);
+xs = .5:0.01:2.5;
+plot(xs, m_func(xs), 'r', 'LineWidth', 2);
+
+params.it_lim = 100; params.tol = 1e-12; params.init = 2.4; 
+params.g_func = d_m_func; params.h_func = dd_m_func; params.alpha = .9;
+
+[mins, hess] = nwt_min(params);
+
+s_params.cov = 1; s_params.func = m_func;
+s_params.imp = 0; s_params.it = 1;
+s_params.samps = 3; s_params.lambda = .5;
+s_params.input = 2.4;
+% 
+% for it = 1:length(mins)
+%    comet(mins(it), m_func(mins(it)));
+%    drawnow;
+% end
+
+nwt_args.hess = hess(end); nwt_args.sol = mins(end);
+pi_mins = pi_sampling(s_params, nwt_args);
+
+for it = 1:length(pi_mins)
+   comet(pi_mins(it), m_func(pi_mins(it)));
+   drawnow;
+end
