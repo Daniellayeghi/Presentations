@@ -174,10 +174,10 @@ dd_m_func = @(x)((2251799813685248*exp(-x.^2))/5644425081792261 - ...
 xs = -10:0.01:10;
 plot(xs, m_func(xs), 'r', 'LineWidth', 2);
 
-params.it_lim = 1; params.tol = 1e-6; params.init = -1; 
+params.it_lim = 1; params.tol = 1e-6; params.init = -4; 
 params.g_func = d_m_func; params.alpha = .15;
 
-s_params.cov = 1; s_params.func = m_func;
+s_params.cov = .15; s_params.func = m_func;
 s_params.imp = 1; s_params.it = 1;
 s_params.samps = 4; s_params.lambda = .1;
 s_params.input = params.init; s_params.hess_reg = 1;

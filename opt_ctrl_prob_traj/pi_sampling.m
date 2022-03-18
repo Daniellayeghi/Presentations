@@ -7,8 +7,10 @@ function c_input =  pi_sampling(params, nwt_args)
    func = params.func;
    k = params.imp;
    c_input = [params.input];
-   csts = zeros(params.samps, 1);
-   n_cov  = inv(nwt_args.hess) * params.hess_reg; cov = params.cov; n_mean = nwt_args.sol;
+   csts = zeros(params.samps, 1);   
+   n_cov  = inv(nwt_args.hess) * params.hess_reg; 
+   cov = params.cov; n_mean = nwt_args.sol;
+   
    for it = 1:params.it
        rng(1)
        r_input = normrnd(0,sqrt(cov),[params.samps, 1]);
